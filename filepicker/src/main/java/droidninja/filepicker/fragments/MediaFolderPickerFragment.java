@@ -16,8 +16,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.RequestManager;
+
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -47,7 +46,6 @@ public class MediaFolderPickerFragment extends BaseFragment implements FolderGri
     private PhotoPickerFragmentListener mListener;
     private FolderGridAdapter photoGridAdapter;
     private ImageCaptureManager imageCaptureManager;
-    private RequestManager mGlideRequestManager;
     private int fileType;
 
     public MediaFolderPickerFragment() {
@@ -90,7 +88,6 @@ public class MediaFolderPickerFragment extends BaseFragment implements FolderGri
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mGlideRequestManager = Glide.with(this);
     }
 
     @Override
@@ -114,23 +111,6 @@ public class MediaFolderPickerFragment extends BaseFragment implements FolderGri
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
 
-        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-                // Log.d(">>> Picker >>>", "dy = " + dy);
-                if (Math.abs(dy) > SCROLL_THRESHOLD) {
-                    mGlideRequestManager.pauseRequests();
-                } else {
-                    resumeRequestsIfNotDestroyed();
-                }
-            }
-            @Override public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                    resumeRequestsIfNotDestroyed();
-                }
-            }
-        });
-        
         getDataFromMedia();
     }
 
@@ -205,7 +185,7 @@ public class MediaFolderPickerFragment extends BaseFragment implements FolderGri
             }
             else
             {
-                photoGridAdapter = new FolderGridAdapter(getActivity(), mGlideRequestManager, (ArrayList<PhotoDirectory>) dirs, null, (fileType==FilePickerConst.MEDIA_TYPE_IMAGE) && PickerManager.getInstance().isEnableCamera());
+                photoGridAdapter = new FolderGridAdapter(getActivity(), (ArrayList<PhotoDirectory>) dirs, null, (fileType==FilePickerConst.MEDIA_TYPE_IMAGE) && PickerManager.getInstance().isEnableCamera());
                 recyclerView.setAdapter(photoGridAdapter);
 
                 photoGridAdapter.setFolderGridAdapterListener(this);
@@ -262,11 +242,4 @@ public class MediaFolderPickerFragment extends BaseFragment implements FolderGri
         }
     }
 
-    private void resumeRequestsIfNotDestroyed() {
-        if (!AndroidLifecycleUtils.canLoadImage(this)) {
-            return;
-        }
-
-        mGlideRequestManager.resumeRequests();
-    }
 }

@@ -10,8 +10,7 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.RequestManager;
-import com.bumptech.glide.request.RequestOptions;
+import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -24,7 +23,6 @@ import droidninja.filepicker.utils.AndroidLifecycleUtils;
 public class FolderGridAdapter extends SelectableAdapter<FolderGridAdapter.PhotoViewHolder, PhotoDirectory>{
 
   private final Context context;
-  private final RequestManager glide;
   private final boolean showCamera;
   private int imageSize;
 
@@ -37,11 +35,10 @@ public class FolderGridAdapter extends SelectableAdapter<FolderGridAdapter.Photo
       void onFolderClicked(PhotoDirectory photoDirectory);
   }
 
-  public FolderGridAdapter(Context context, RequestManager requestManager, ArrayList<PhotoDirectory> photos, ArrayList<String> selectedPaths, boolean showCamera)
+  public FolderGridAdapter(Context context, ArrayList<PhotoDirectory> photos, ArrayList<String> selectedPaths, boolean showCamera)
   {
     super(photos, selectedPaths);
     this.context = context;
-    this.glide = requestManager;
     this.showCamera = showCamera;
     setColumnNumber(context,3);
   }
@@ -68,12 +65,12 @@ public class FolderGridAdapter extends SelectableAdapter<FolderGridAdapter.Photo
       final PhotoDirectory photoDirectory = getItems().get(showCamera?position-1:position);
 
       if(AndroidLifecycleUtils.canLoadImage(holder.imageView.getContext())) {
-        glide.load(new File(photoDirectory.getCoverPath()))
-                .apply(RequestOptions
-                        .centerCropTransform()
-                        .override(imageSize, imageSize)
-                        .placeholder(R.drawable.image_placeholder))
-                .thumbnail(0.5f)
+
+        Picasso.with(context)
+                .load(new File(photoDirectory.getCoverPath()))
+                .placeholder(R.drawable.image_placeholder)
+                .resize(imageSize, imageSize)
+                .centerCrop()
                 .into(holder.imageView);
       }
 

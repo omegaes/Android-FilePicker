@@ -8,11 +8,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.ImageView;
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
+
+import com.squareup.picasso.Picasso;
+
 import java.io.File;
 import java.util.ArrayList;
 
@@ -48,14 +46,12 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.FileViewHold
 
   @Override public void onBindViewHolder(FileViewHolder holder, int position) {
     String path = paths.get(position);
-    Glide.with(context)
-        .load(new File(path))
-        .apply(RequestOptions.centerCropTransform()
-            .dontAnimate()
-            .override(imageSize, imageSize)
-            .placeholder(droidninja.filepicker.R.drawable.image_placeholder))
-        .thumbnail(0.5f)
-        .into(holder.imageView);
+    Picasso.with(context)
+            .load(new File(path))
+            .placeholder(droidninja.filepicker.R.drawable.image_placeholder)
+            .resize(imageSize, imageSize)
+            .centerCrop()
+            .into(holder.imageView);
   }
 
   @Override public int getItemCount() {

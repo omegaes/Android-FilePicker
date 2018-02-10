@@ -9,8 +9,8 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ImageView;
 
-import com.bumptech.glide.RequestManager;
-import com.bumptech.glide.request.RequestOptions;
+
+import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -25,7 +25,6 @@ import droidninja.filepicker.views.SmoothCheckBox;
 public class PhotoGridAdapter extends SelectableAdapter<PhotoGridAdapter.PhotoViewHolder, Media>{
 
   private final Context context;
-  private final RequestManager glide;
   private final boolean showCamera;
   private final FileAdapterListener mListener;
   private int imageSize;
@@ -35,7 +34,6 @@ public class PhotoGridAdapter extends SelectableAdapter<PhotoGridAdapter.PhotoVi
   private View.OnClickListener cameraOnClickListener;
 
   public PhotoGridAdapter(Context context,
-                          RequestManager requestManager,
                           ArrayList<Media> medias,
                           ArrayList<String> selectedPaths,
                           boolean showCamera,
@@ -43,7 +41,6 @@ public class PhotoGridAdapter extends SelectableAdapter<PhotoGridAdapter.PhotoVi
   {
     super(medias, selectedPaths);
     this.context = context;
-    this.glide = requestManager;
     this.showCamera = showCamera;
     this.mListener = photoGridAdapterListener;
     setColumnNumber(context,3);
@@ -71,12 +68,12 @@ public class PhotoGridAdapter extends SelectableAdapter<PhotoGridAdapter.PhotoVi
       final Media media = getItems().get(showCamera?position-1:position);
 
       if(AndroidLifecycleUtils.canLoadImage(holder.imageView.getContext())) {
-        glide.load(new File(media.getPath()))
-                .apply(RequestOptions
-                        .centerCropTransform()
-                        .override(imageSize, imageSize)
-                        .placeholder(R.drawable.image_placeholder))
-                .thumbnail(0.5f)
+
+        Picasso.with(context)
+                .load(new File(media.getPath()))
+                .placeholder(R.drawable.image_placeholder)
+                .resize(imageSize, imageSize)
+                .centerCrop()
                 .into(holder.imageView);
       }
 

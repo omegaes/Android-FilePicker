@@ -158,7 +158,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+       // EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
     }
 
     public void onOpenFragmentClicked(View view) {

@@ -13,14 +13,11 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
-import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.RequestManager;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -40,7 +37,6 @@ public class MediaDetailsActivity extends BaseFilePickerActivity implements File
     private static final int SCROLL_THRESHOLD = 30;
     private RecyclerView recyclerView;
     private TextView emptyView;
-    private RequestManager mGlideRequestManager;
     private PhotoGridAdapter photoGridAdapter;
     private int fileType;
     private MenuItem selectAllItem;
@@ -54,7 +50,6 @@ public class MediaDetailsActivity extends BaseFilePickerActivity implements File
 
     @Override
     protected void initView() {
-        mGlideRequestManager = Glide.with(this);
         Intent intent = getIntent();
         if (intent != null) {
 
@@ -91,23 +86,6 @@ public class MediaDetailsActivity extends BaseFilePickerActivity implements File
         layoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
-
-        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-                // Log.d(">>> Picker >>>", "dy = " + dy);
-                if (Math.abs(dy) > SCROLL_THRESHOLD) {
-                    mGlideRequestManager.pauseRequests();
-                } else {
-                    resumeRequestsIfNotDestroyed();
-                }
-            }
-            @Override public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                    resumeRequestsIfNotDestroyed();
-                }
-            }
-        });
 
         getDataFromMedia(photoDirectory.getBucketId());
     }
@@ -170,7 +148,7 @@ public class MediaDetailsActivity extends BaseFilePickerActivity implements File
         }
         else
         {
-            photoGridAdapter = new PhotoGridAdapter(this, mGlideRequestManager, (ArrayList<Media>) medias,PickerManager.getInstance().getSelectedPhotos(),false, this);
+            photoGridAdapter = new PhotoGridAdapter(this, (ArrayList<Media>) medias,PickerManager.getInstance().getSelectedPhotos(),false, this);
             recyclerView.setAdapter(photoGridAdapter);
         }
 
@@ -185,13 +163,7 @@ public class MediaDetailsActivity extends BaseFilePickerActivity implements File
         }
     }
 
-    private void resumeRequestsIfNotDestroyed() {
-        if (!AndroidLifecycleUtils.canLoadImage(this)) {
-            return;
-        }
 
-        mGlideRequestManager.resumeRequests();
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
